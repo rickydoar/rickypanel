@@ -40,6 +40,8 @@ def segmentation(request):
 	on = request.GET.get("on")
 	expire = request.GET.get("expire")
 	params = request.GET.dict()
+	if not params.get('sig'):
+		return HttpResponse(json.dumps({"request":request.GET, "error":"no api signature"}))
 	del params['sig']
 	try:
 		api_secret = Project.objects.get(api_key=api_key).api_secret
