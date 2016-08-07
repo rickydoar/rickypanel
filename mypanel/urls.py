@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from rickypanel.views import track_event, segmentation
 
 urlpatterns = [
 	url(r'^home/', include('rickypanel.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^track/', 'rickypanel.views.track_event', name="track_event"),
-    url(r'^segmentation/', 'rickypanel.views.segmentation', name="segmentation")
+    url(r'^track/', track_event, name="track_event"),
+    url(r'^segmentation/', segmentation, name="segmentation")
 ]
