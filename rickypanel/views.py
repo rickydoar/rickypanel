@@ -9,6 +9,8 @@ def index(request):
     return HttpResponse("Hello, world")
 
 def track_event(request):
+	if len(request.GET) == 0:
+		return HttpResponse(json.dumps({"success":0, "error":"no data"}))
 	token = request.GET.get("token")
 	name = request.GET.get("name")
 	os = request.GET.get("os", "Undefined")
@@ -16,8 +18,9 @@ def track_event(request):
 	prop1 = request.GET.get("prop1", "Undefined")
 	prop2 = request.GET.get("prop2", "Undefined")
 	prop3 = request.GET.get("prop3", "Undefined")
-	timestamp = float(request.GET.get("time"))
-	if not timestamp:
+	if request.GET.get("time"):
+		timestamp = float(request.GET.get("time"))
+	else:
 		timestamp = int(time.time())
 	try:
 		date = (datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d'))
@@ -26,9 +29,9 @@ def track_event(request):
 	if token and name:
 		event = Event.objects.create(token=token, name=name, timestamp=timestamp, date=date, os=os,
 			prop1=prop1, prop2=prop2, prop3=prop3)
-		return HttpResponse("1")
+		return HttpResponse(json.dumps({"success":1, "error":"none"}))
 	else:
-		return HttpResponse("0")
+		return HttpResponse(json.dumps({"success":0, "error":"missing required parameters"}))
 
 #built to only support daily, currently not scalable to other units
 def segmentation(request):
