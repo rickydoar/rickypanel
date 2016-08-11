@@ -2,17 +2,89 @@ from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .models import Project, Event
-import time, datetime, json, hashlib
+import time, datetime, json, hashlib, uuid
 from django.http import HttpResponse
 
-def index(request):
-    return HttpResponse("Hello, world")
+def home(request):
+	if request.user.is_authenticated():
+		return redirect('/dashboard/')
+	context = {}
+	template = "home.html"
+	if request.POST:
+		username = user_login(request)
+		if username:
+			return HttpResponseRedirect("/dashboard/")
+		else:
+			context["error"] = True
+	return render(request, template, context)
+
+def dashboard(request):
+	if not request.user.is_authenticated():
+		return redirect('/')
+	else:
+		context = {}
+		if request.POST.get("project"):
+			api_key = str(uuid.uuid4()).replace('-','')
+			Project.objects.create(user=request.user, name=request.POST["project"], api_key=api_key,
+				api_secret=str(uuid.uuid4()).replace('-',''), token=str(uuid.uuid4()).replace('-',''))
+			return redirect('/')
+		elif request.POST:
+			user_logout(request)
+			return redirect('/')
+		user = User.objects.get(username=request.user)
+		email = user.email
+		all_projects = user.project_set.all()
+		if len(all_projects) == 0:
+			api_key = str(uuid.uuid4()).replace('-','')
+			Project.objects.create(user=request.user, name="New project", api_key=api_key,
+				api_secret=str(uuid.uuid4()).replace('-',''), token=str(uuid.uuid4()).replace('-',''))
+		 	return redirect('/')
+		context.update({"username":request.user, "email":email, "all_projects":all_projects})
+		template = "dashboard.html"
+		return render(request, template, context)
+
+def make_user(request):
+	if request.user.is_authenticated():
+		return redirect('/dashboard/')
+	template = "create_user.html"
+	if request.POST:
+		email = request.POST['email']
+		password = request.POST['password']
+		try:
+			User.objects.get(email=request.POST['email'])
+		except:
+			username = str(uuid.uuid4())[:11].replace('-','')
+			new_user = User.objects.create_user(username, email, password)
+			if user_login(request):
+				return HttpResponseRedirect("/dashboard/")
+	return render(request, template)
+
+def user_logout(request):
+	logout(request)
+	return redirect('/')
+	
+def user_login(request):
+	try:
+		username = User.objects.get(email=request.POST['email']).username
+		user = authenticate(username=username, password=request.POST['password'])
+		if user is not None:
+			# the password verified for the user
+			if user.is_active:
+				login(request, user)
+				return username
+			else:
+				return False
+		else:
+		    # the authentication system was unable to verify the username and password
+		    return False
+	except:
+		print("User does not exist")
 
 def track_event(request):
 	if len(request.GET) == 0:
 		return HttpResponse(json.dumps({"success":0, "error":"no data"}))
 	token = request.GET.get("token")
-	name = request.GET.get("name")
+	name = request.GET.get("event")
 	os = request.GET.get("os", "Undefined")
 	distinct_id = request.GET.get("distinct_id")
 	prop1 = request.GET.get("prop1", "Undefined")
@@ -33,30 +105,60 @@ def track_event(request):
 	else:
 		return HttpResponse(json.dumps({"success":0, "error":"missing required parameters"}))
 
-#built to only support daily, currently not scalable to other units
+def top_events(request):
+	sig = request.GET.get("sig")
+	print request.GET.get("api_key")
+	try:
+		api_secret = Project.objects.get(api_key=request.GET.get("api_key")).api_secret
+		token = Project.objects.get(api_key=request.GET.get("api_key")).token
+	except:
+		return HttpResponse(json.dumps({"request":request.GET, "error":"no project found"}))
+	if not sig:
+		return HttpResponse(json.dumps({"request":request.GET, "error":"no api signature"}))
+	try:
+		expire = request.GET.get("expire")
+		expire = int(expire)
+	except:
+		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid expire parameter"}))
+	if expire < time.time():
+		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid expire parameter"}))
+	secure_sig = generate_sig(request, api_secret)
+	print secure_sig
+	if secure_sig == sig:
+		events = Event.objects.filter(token=token)
+		event_counts = {}
+		for event in events:
+			if event_counts.get(event.name):
+				event_counts[event.name] += 1
+			else:
+				event_counts[event.name] = 1
+		return HttpResponse(json.dumps(event_counts))
+	else:
+		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid api signature"}))
+
+
 def segmentation(request):
 	sig = request.GET.get("sig")
-	api_key = request.GET.get("api_key")
 	to_date = request.GET.get("to_date")
 	from_date = request.GET.get("from_date")
-	event = request.GET.get("event")
+	name = request.GET.get("event")
 	on = request.GET.get("on")
 	expire = request.GET.get("expire")
-	params = request.GET.dict()
-	if not params.get('sig'):
-		return HttpResponse(json.dumps({"request":request.GET, "error":"no api signature"}))
-	del params['sig']
 	try:
-		api_secret = Project.objects.get(api_key=api_key).api_secret
+		project = Project.objects.get(api_key=request.GET.get("api_key"))
+		api_secret = project.api_secret
+		token = project.token
 	except:
-		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid api key"}))
+		return HttpResponse(json.dumps({"request":request.GET, "error":"no project found"}))
+	if not sig:
+		return HttpResponse(json.dumps({"request":request.GET, "error":"no api signature"}))
 	try:
 		expire = int(expire)
 	except:
 		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid expire parameter"}))
 	if expire < time.time():
 		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid expire parameter"}))
-	secure_sig = generate_sig(params, api_secret)
+	secure_sig = generate_sig(request, api_secret)
 	print secure_sig
 	if secure_sig == sig:
 		try:
@@ -69,7 +171,7 @@ def segmentation(request):
 		segments = set()
 		for i in range(delta.days + 1):
 			current_day = str(from_date_object + datetime.timedelta(days=i))
-			events = Event.objects.filter(name=event).filter(date=current_day)
+			events = Event.objects.filter(name=name).filter(date=current_day).filter(token=token)
 			if on:
 				result[current_day] = {}
 				for item in events:
@@ -80,7 +182,8 @@ def segmentation(request):
 					else:
 						result[current_day][segment] = 1
 			else:
-				result[current_day] = len(events)
+				result[current_day] = {}
+				result[current_day][name] = len(events)
 		if on:
 			for day in result:
 				for segment in segments:
@@ -90,7 +193,10 @@ def segmentation(request):
 	else:
 		return HttpResponse(json.dumps({"request":request.GET, "error":"invalid api signature"}))
 
-def generate_sig(params, api_secret):
+def generate_sig(request, api_secret):
+	request.GET.get("api_key")
+	params = request.GET.dict()
+	del params['sig']
 	keys = sorted(params.keys())
 	args_joined = ''
 	for arg in keys:

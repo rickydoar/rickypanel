@@ -1,0 +1,32 @@
+{% extends "inner.html" %}
+
+{% block content %}
+
+<style>
+#submit{
+	padding: 5px 10px;
+}
+</style>
+
+ <div class="jumbotron">
+        <h3>Sign up</h3>
+        <h5>Start making better business decisions today</h5>
+      	<form method="POST" action="" class"form-horizontal"> {% csrf_token %}
+      	<div class="form-group">
+      	    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+      	    <div class="col-sm-10">
+      	      <input type="email" class="form-control" name="email" placeholder="Email">
+      	    </div>
+      	  </div>
+      	  <div class="form-group">
+      	    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+      	    <div class="col-sm-10">
+      	      <input type="password" class="form-control" name="password" placeholder="Password">
+      	    </div>
+      	  </div>
+      	  <br/><br/><br/><br/>
+      	<input type="submit" value="Submit" class="btn btn-primary btn-xs" id="submit"/>
+      	</form>
+</div>
+
+{% endblock %}

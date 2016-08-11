@@ -15,11 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from rickypanel.views import track_event, segmentation
+from rickypanel.views import track_event, segmentation, home, make_user, dashboard, top_events
 
 urlpatterns = [
-	url(r'^home/', include('rickypanel.urls')),
+    url(r'^$', home, name='home'),
+    url(r'^create_user/', make_user, name='make_user'),
     url(r'^admin/', admin.site.urls),
+    url(r'^dashboard/', dashboard, name='dashboard'),
     url(r'^track/', track_event, name="track_event"),
-    url(r'^segmentation/', segmentation, name="segmentation")
+    url(r'^segmentation/', segmentation, name="segmentation"),
+    url(r'^events/', top_events, name="top_events")
 ]
+
+#dashboard/(?P<username>.*)$

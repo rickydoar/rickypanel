@@ -1,0 +1,13 @@
+.projects
+  - var re = new RegExp("csrftoken" + "=([^;]+)");
+  - var value = re.exec(document.cookie);
+  - var formtoken = (value != null) ? unescape(value[1]) : null;
+  .projectSelector.styled-select
+    select(id="projectOptions", onchange=$helpers.project_change)
+      option(selected="selected", value="placeholder") Loading...
+  .projectForm
+    form(id="projForm", method="POST")
+      input(type="hidden", name="csrfmiddlewaretoken", value="#{formtoken}")
+      input(type="text", name="project", placeholder="New Project" required)
+      input.btn.btn-primary.btn-xs(type="submit", value="submit", id="submit")
+    .newProject Create Project:

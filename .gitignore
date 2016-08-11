@@ -1,0 +1,5 @@
+*.pyc
+*.sqlite
+
+# Dependency directories
+node_modules

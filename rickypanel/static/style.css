@@ -1,0 +1,168 @@
+.navbar{
+    background-color: #3f516b;
+}
+  .navbar-inverse .navbar-brand {
+    color: #8a9fbe;
+}
+
+#btn{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#jumboheader{
+  color:#F8F8FF;
+}
+
+.reportBody {
+	height:790px;
+	background: #d9dfe9;
+	width:95%;
+	margin-left: 35px;
+}
+
+.projects {
+    height:20px;
+    margin-top: 20px
+}
+
+.topChart {
+    height: 50px;
+}
+
+.chartData {
+    height:483px;
+    border-top: 1px solid #c4c9d8;
+}
+
+.toDate {
+    float:left;
+}
+
+.fromDate {
+    float: left;
+}
+
+.datePicker {
+    width: 100px;
+    margin: 8px;
+}
+
+.newProject {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+    float:right;
+    padding: 2px;
+    margin-right: 5px;
+}
+
+#projForm {
+    float:right;
+}
+
+.projectForm {
+    float:right;
+    padding:12px;
+}
+
+.queryBuilder {
+    position: relative;
+    top: 15px;
+    margin: 15px;
+}
+
+.dashboard {
+    box-shadow: inset 0 1px #fff,0 1px 1px rgba(0,0,0,0.03);
+    position: relative;
+    background-color: #eff2f9;
+    border-bottom: 1px solid #e0e4ec;
+    border-radius: 3px 3px 0 0;
+    border: 1px solid #c4c9d8;
+}
+
+.topBanner {
+    width:100%;
+    height: 50px;
+}
+
+.middleBanner {
+    background-color:#fbfbfb;
+    height: 70px; 
+    border: 1px solid #c4c9d8;
+    border-width: 0 1px;
+    padding: 19px 24px;
+}
+
+.bottomBanner {
+    width:100%;
+    height: 50px;
+}
+
+.chartBody {
+    position: relative;
+    top:20px;
+    margin:15px;
+    height: 535px;
+}
+
+.eventSelector{
+    margin:10px;
+}
+
+.projectSelector{
+    padding: 7px;
+    float:left;
+}
+
+.by {
+    position: relative;
+    z-index: 1;
+    display: block;
+    float: left;
+    width: 80px;
+    padding: 8px 0;
+    background: #dfe2ec;
+    color: #747d94;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    text-shadow: 0 1px rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+
+.propSelector{
+    margin-top: 3px;
+    float: left;
+    margin-left: 10px;
+}
+
+.styled-select select {
+    width: 175px;
+    padding: 5px;
+    font-size: 14px;
+    line-height: 1;
+    height: 30px;
+    -webkit-appearance: none;
+    text-align: center;
+    float:left;
+}
+
+#select2-eventOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+
+#select2-propOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+
+#select2-projectOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}

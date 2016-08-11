@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<script>
+  initRickyPanel("4d8b210f05ce4204bc3e94dd9af956bd")
+  var projects = {}
+</script>
+{% for project in all_projects %}
+<script>
+projects["{{ project }}"] = {api_key:"{{ project.api_key }}", api_secret:"{{ project.api_secret }}"}
+</script>
+{% endfor %}
+<script src="../static/bundle.js"></script>
+<ul class="nav navbar-nav navbar-right">
+<li><a href="">{{email}} </a></li>
+  <li>
+    <form method="POST" class="navbar-form navbar-right" action=""> {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Log out</button>
+    </form>
+  </li>
+</ul>
+{% endblock %}
+
+{% block container %}
+<report-app></report-app>
+{% endblock %}

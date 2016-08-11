@@ -1,7 +1,60 @@
-<html>
-    <head>
-    </head>
-    <body>
-    Hello World
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block jumbotron %}
+{% if error %}
+<style>
+.alert{
+  margin-bottom: 0px;
+}
+</style>
+  <div class="alert alert-danger" role="alert">
+      <strong>Oh snap!</strong> Not a valid login...
+  </div>
+{% endif %}
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Hello, Rickypanelers!</h1>
+        <p>Welcome to the most (least) advanced analytics platform you've ever seen! Get ready to be amazed at how quickly you can collect, query, and segment data to find critical business insights. You've reached the ultimate location to gain a leg up on your competition</p>
+        <p><a class="btn btn-primary btn-lg" href="create_user" role="button">Sign up!</a></p>
+      </div>
+    </div>
+{% endblock %}
+
+{% block navbar %}
+<div id="navbar" class="navbar-collapse collapse">
+          <form method="POST" class="navbar-form navbar-right" action=""> {% csrf_token %}
+            <div class="form-group">
+              <input type="text" placeholder="Email" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" class="form-control" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+{% endblock %}
+
+{% block container %}
+<div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Track data!</h2>
+          <p>With our easy to use javascript library you'll be tracking data in no time. 10 minute setup time guaranteed!</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Pull Event Counts</h2>
+          <p>Pull the counts of events on an event by event basis. Generates beautiful reports per event and per property.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Segment Data</h2>
+          <p>Dive deeply into your data set to see exactly how your users are using your application.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+</div>
+
+{% endblock %}
